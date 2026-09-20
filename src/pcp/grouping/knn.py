@@ -1,4 +1,5 @@
 import torch
+
 from pcp.core.PointCloud import PointCloud
 
 def knn(points: PointCloud, centroid: PointCloud | torch.Tensor, k: int) -> PointCloud:
