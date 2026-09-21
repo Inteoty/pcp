@@ -5,7 +5,7 @@ from pcp.core.PointCloud import PointCloud
 
 def ball_query(
     radius: float,
-    nsample: int,
+    n_samples: int,
     points: PointCloud | torch.Tensor,
     centroids: PointCloud | torch.Tensor,
 ):
@@ -21,15 +21,15 @@ def ball_query(
     batch_size, num_points, _ = points.shape
     distances = torch.cdist(centroids, points)
 
-    k = min(nsample, num_points)
+    k = min(n_samples, num_points)
     distances, group_idx = torch.topk(distances, k, dim=-1, largest=False)
 
     first_idx = group_idx[:, :, :1]
     first_idx = first_idx.repeat(1, 1, k)
     group_idx[distances > radius] = first_idx[distances > radius]
 
-    if k < nsample:
-        padding = group_idx[:, :, :1].repeat(1, 1, nsample - k)
+    if k < n_samples:
+        padding = group_idx[:, :, :1].repeat(1, 1, n_samples - k)
         group_idx = torch.cat([group_idx, padding], dim=-1)
 
     batch_idx = torch.arange(batch_size, device=points.device)
